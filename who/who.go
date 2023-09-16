@@ -17,7 +17,7 @@ type Who struct {
 
 func (w Who) Inscribe() (chain.Cid, *chain.Lead, error) {
 	cw := &ChainWho{
-		Type:  chain.WHO,
+		Type:  chain.Types.Who,
 		Scope: w.Scope,
 		Addr:  w.Addr,
 		Code:  w.Ref.Code,

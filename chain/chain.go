@@ -1,25 +1,37 @@
 package chain
 
 import (
-	"encoding/hex"
 	"strings"
 )
 
-type Type string
+type Type int32
 
-var SCOPE = TypeOf("SCOPE")
-var WHO = TypeOf("WHO")
-var WHAT = TypeOf("WHAT")
-var WHERE = TypeOf("WHERE")
-var EVENT = TypeOf("EVENT")
+type types struct {
+	ValuableNet Type
+	Scope       Type
+	Who         Type
+	What        Type
+	Where       Type
+	Event       Type
+	LinkPre     Type
+	Link        Type
+}
 
-func TypeOf(strType string) Type {
-	hexStr := hex.EncodeToString([]byte(strType))
-	return Type(hexStr)
+var Types = types{
+	ValuableNet: 3,
+	Scope:       14,
+	Who:         15,
+	What:        92,
+	Where:       65,
+	Event:       35,
+	LinkPre:     89,
+	Link:        79,
 }
 
 type Data interface {
 	GetType() Type
+	GetVn() Cid
+	GetScope() Cid
 }
 
 type Key = string

@@ -14,7 +14,7 @@ type Where struct {
 
 func (w Where) ToChainWhere() (chain.Cid, *ChainWhere, error) {
 	cw := &ChainWhere{
-		Type: chain.WHERE,
+		Type: chain.Types.Where,
 		Code: w.Ref.Code,
 		ID:   w.Ref.ID,
 		Tag:  w.Ref.Tag,
