@@ -4,15 +4,17 @@ import (
 	"github.com/hootuu/domain/chain"
 	"github.com/hootuu/domain/inject"
 	"github.com/hootuu/domain/ref"
+	"github.com/hootuu/domain/scope"
 )
 
 type Addr = string
 
 type What struct {
-	Ref ref.Ref `bson:"ref" json:"ref"`
+	Scope scope.Lead `bson:"scope" json:"scope"`
+	Ref   ref.Ref    `bson:"ref" json:"ref"`
 }
 
-func (w What) ToChainWhat() (chain.Cid, *ChainWhat, error) {
+func (w What) Inscribe() (chain.Cid, *chain.Lead, error) {
 	cw := &ChainWhat{
 		Type: chain.WHAT,
 		Code: w.Ref.Code,
@@ -24,15 +26,20 @@ func (w What) ToChainWhat() (chain.Cid, *ChainWhat, error) {
 	if err != nil {
 		return chain.NilCid, nil, err
 	}
-	return cid, cw, nil
+	lead, err := inject.GetLinker().Append(w.Scope.VN, chain.KeyOf(w.Scope.Scope, chain.WHAT, w.Ref.Code), cid)
+	if err != nil {
+		return chain.NilCid, nil, err
+	}
+	return cid, lead, nil
 }
 
 type ChainWhat struct {
-	Type chain.Type        `bson:"t" json:"t"`
-	Code string            `bson:"code" json:"code"`
-	ID   string            `bson:"id" json:"id"`
-	Tag  []string          `bson:"tag,omitempty" json:"tag,omitempty"`
-	Attr map[string]string `bson:"attr,omitempty" json:"attr,omitempty"`
+	Type  chain.Type        `bson:"t" json:"t"`
+	Scope scope.Lead        `bson:"scope" json:"scope"`
+	Code  string            `bson:"code" json:"code"`
+	ID    string            `bson:"id" json:"id"`
+	Tag   []string          `bson:"tag,omitempty" json:"tag,omitempty"`
+	Attr  map[string]string `bson:"attr,omitempty" json:"attr,omitempty"`
 }
 
 func (c ChainWhat) GetType() chain.Type {
