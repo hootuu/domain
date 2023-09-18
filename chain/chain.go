@@ -13,7 +13,6 @@ type types struct {
 	What        Type
 	Where       Type
 	Event       Type
-	LinkPre     Type
 	Link        Type
 }
 
@@ -24,8 +23,7 @@ var Types = types{
 	What:        92,
 	Where:       65,
 	Event:       35,
-	LinkPre:     89,
-	Link:        79,
+	Link:        89,
 }
 
 type Data interface {
