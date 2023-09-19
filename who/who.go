@@ -4,13 +4,12 @@ import (
 	"github.com/hootuu/domain/chain"
 	"github.com/hootuu/domain/inject"
 	"github.com/hootuu/domain/ref"
-	"github.com/hootuu/domain/scope"
 )
 
 type Addr = string
 
 type Who struct {
-	Scope scope.Lead `bson:"scope" json:"scope"`
+	Scope chain.Lead `bson:"scope" json:"scope"`
 	Addr  Addr       `bson:"addr" json:"addr"`
 	Ref   ref.Ref    `bson:"ref" json:"ref"`
 }
@@ -38,7 +37,7 @@ func (w Who) Inscribe() (chain.Cid, *chain.Lead, error) {
 
 type ChainWho struct {
 	Type  chain.Type        `bson:"t" json:"t"`
-	Scope scope.Lead        `bson:"scope" json:"scope"`
+	Scope chain.Lead        `bson:"scope" json:"scope"`
 	Addr  Addr              `bson:"addr" json:"addr"`
 	Code  string            `bson:"code" json:"code"`
 	ID    string            `bson:"id" json:"id"`

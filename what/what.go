@@ -4,13 +4,12 @@ import (
 	"github.com/hootuu/domain/chain"
 	"github.com/hootuu/domain/inject"
 	"github.com/hootuu/domain/ref"
-	"github.com/hootuu/domain/scope"
 )
 
 type Addr = string
 
 type What struct {
-	Scope scope.Lead `bson:"scope" json:"scope"`
+	Scope chain.Lead `bson:"scope" json:"scope"`
 	Ref   ref.Ref    `bson:"ref" json:"ref"`
 }
 
@@ -35,7 +34,7 @@ func (w What) Inscribe() (chain.Cid, *chain.Lead, error) {
 
 type ChainWhat struct {
 	Type  chain.Type        `bson:"t" json:"t"`
-	Scope scope.Lead        `bson:"scope" json:"scope"`
+	Scope chain.Lead        `bson:"scope" json:"scope"`
 	Code  string            `bson:"code" json:"code"`
 	ID    string            `bson:"id" json:"id"`
 	Tag   []string          `bson:"tag,omitempty" json:"tag,omitempty"`

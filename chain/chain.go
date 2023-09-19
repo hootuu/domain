@@ -1,6 +1,8 @@
 package chain
 
 import (
+	"github.com/hootuu/utils/errors"
+	"regexp"
 	"strings"
 )
 
@@ -52,6 +54,17 @@ type Lead struct {
 type Cid = string
 
 const NilCid Cid = ""
+
+func CidVerify(cid Cid) *errors.Error {
+	if len(cid) > 64 {
+		return errors.Verify("The length of the cid field cannot be greater than 64")
+	}
+	matched, err := regexp.MatchString("^[a-zA-Z0-9_]+$", cid)
+	if err != nil || !matched {
+		return errors.Verify("Cid must be a valid string combination")
+	}
+	return nil
+}
 
 func CidOf(cidStr string) Cid {
 	return Cid(cidStr)

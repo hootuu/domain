@@ -1,6 +1,6 @@
 package chain
 
-import "log/slog"
+import "github.com/hootuu/utils/sys"
 
 type Stone interface {
 	Inscribe(data Data) (Cid, error)
@@ -15,7 +15,7 @@ func InjectStone(s Stone) {
 
 func GetStone() Stone {
 	if gStone == nil {
-		slog.Error("must inject chain.InjectStone first")
+		sys.Error("must inject chain.InjectStone first")
 	}
 	return gStone
 }

@@ -5,7 +5,6 @@ import (
 	"github.com/hootuu/domain/chain"
 	"github.com/hootuu/domain/howm"
 	"github.com/hootuu/domain/inject"
-	"github.com/hootuu/domain/scope"
 	"github.com/hootuu/domain/what"
 	"github.com/hootuu/domain/where"
 	"github.com/hootuu/domain/who"
@@ -15,7 +14,7 @@ import (
 type Act = string
 
 type Event struct {
-	Scope   scope.Lead   `bson:"scope" json:"scope"`
+	Scope   chain.Lead   `bson:"scope" json:"scope"`
 	Who     who.Who      `bson:"who" json:"who"`
 	Where   where.Where  `bson:"where" json:"where"`
 	Act     Act          `bson:"act" json:"act"`
@@ -78,7 +77,7 @@ func (e Event) Inscribe() (chain.Cid, *chain.Lead, error) {
 
 type ChainEvent struct {
 	Type    chain.Type   `bson:"t" json:"t"`
-	Scope   scope.Lead   `bson:"scope" json:"scope"`
+	Scope   chain.Lead   `bson:"scope" json:"scope"`
 	Who     chain.Cid    `bson:"who" json:"who"`
 	Where   chain.Cid    `bson:"where" json:"where"`
 	Act     Act          `bson:"act" json:"act"`
