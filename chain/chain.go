@@ -1,71 +1,101 @@
 package chain
 
 import (
+	"fmt"
 	"github.com/hootuu/utils/errors"
-	"regexp"
-	"strings"
+	"github.com/hootuu/utils/strs"
 )
 
-type Type int32
-
-type types struct {
-	ValuableNet Type
-	Scope       Type
-	Who         Type
-	What        Type
-	Where       Type
-	Event       Type
-	Link        Type
+type IChain interface {
+	OnHappen()
+	Write()
+	Consensus()
 }
 
-var Types = types{
-	ValuableNet: 3,
-	Scope:       14,
-	Who:         15,
-	What:        92,
-	Where:       65,
-	Event:       35,
-	Link:        89,
+type Category = string
+
+type Chain struct {
+	VN       Cid      `bson:"v" json:"v"`
+	Scope    Cid      `bson:"s" json:"s"`
+	Category Category `bson:"c" json:"c"`
+
+	_serialize string
 }
 
-type Data interface {
-	GetType() Type
-	GetVn() Cid
-	GetScope() Cid
+func (c *Chain) Same(oChn *Chain) bool {
+	return c.VN == oChn.VN &&
+		c.Scope == oChn.Scope &&
+		c.Category == oChn.Category
 }
 
-type Key = string
-
-func KeyOf(arr ...string) Key {
-	return strings.Join(arr, "_")
-}
-
-type Node struct {
-	Pre *Node `bson:"pre" json:"pre"`
-	Cid Cid   `bson:"cid" json:"cid"`
-	Nxt *Node `bson:"nxt" json:"nxt"`
-}
-
-type Lead struct {
-	Head Cid `bson:"h" json:"h"`
-	Tail Cid `bson:"t" json:"t"`
-}
-
-type Cid = string
-
-const NilCid Cid = ""
-
-func CidVerify(cid Cid) *errors.Error {
-	if len(cid) > 64 {
-		return errors.Verify("The length of the cid field cannot be greater than 64")
+func (c *Chain) SerializeString() string {
+	if len(c._serialize) == 0 {
+		str := fmt.Sprintf("v=%s|s=%s|c=%s", c.VN, c.Scope, c.Category)
+		c._serialize = strs.MD5(str)
 	}
-	matched, err := regexp.MatchString("^[a-zA-Z0-9_]+$", cid)
-	if err != nil || !matched {
-		return errors.Verify("Cid must be a valid string combination")
-	}
-	return nil
+	return c._serialize
 }
 
-func CidOf(cidStr string) Cid {
-	return Cid(cidStr)
+type Block struct {
+	Chain    Chain `bson:"c" json:"c"`
+	Numb     int64 `bson:"n" json:"n"`
+	Data     Cid   `bson:"d" json:"d"`
+	Previous Cid   `bson:"p" json:"p"`
+
+	_serialize string
+}
+
+func (b *Block) Next(data Cid, thisCid Cid) *Block {
+	return &Block{
+		Chain:    b.Chain,
+		Numb:     b.Numb + 1,
+		Data:     data,
+		Previous: thisCid,
+	}
+}
+
+func (b *Block) SerializeString() string {
+	//if len(b._serialize) == 0 {
+	//	str := fmt.Sprintf("c=%s|n=%d|d=%s|p=%s", b.Chain.SerializeString(),
+	//		b.Numb, b.Data, b.Previous)
+	//	fmt.Println("str===", str)
+	//	b._serialize = strs.MD5(str)
+	//}
+	//return b._serialize
+	str := fmt.Sprintf("c=%s|n=%d|d=%s|p=%s", b.Chain.SerializeString(),
+		b.Numb, b.Data, b.Previous)
+	//fmt.Println(str)
+	return strs.MD5(str)
+}
+
+func (b *Block) GetType() Type {
+	return Types.Block
+}
+
+func (b *Block) GetVn() Cid {
+	return b.Chain.VN
+}
+
+func (b *Block) GetScope() Cid {
+	return b.Chain.Scope
+}
+
+const (
+	HeadBlockNumb     = 0
+	HeadBlockData     = "YI"
+	HeadBlockPrevious = "YI"
+)
+
+func NewHeadBlock(chn Chain) (Cid, *Block, *errors.Error) {
+	b := &Block{
+		Chain:    chn,
+		Numb:     HeadBlockNumb,
+		Data:     HeadBlockData,
+		Previous: HeadBlockPrevious,
+	}
+	bCid, err := GetStone().Inscribe(b)
+	if err != nil {
+		return NilCid, nil, errors.Sys("e", err)
+	}
+	return bCid, b, nil
 }
